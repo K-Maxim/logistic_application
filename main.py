@@ -32,9 +32,10 @@ class Store(Storage):
         self.capacity = 100
 
     def add(self, name, count):
-        for name in self.items.keys():
+        if name in self.items.keys():
             self.items[name] += count
-        self.items[name] = count
+        else:
+            self.items[name] = count
         self.capacity -= count
 
     def remove(self, name, count):
@@ -42,7 +43,7 @@ class Store(Storage):
             self.items[name] -= count
         else:
             del self.items[name]
-        self.capacity -= sum(self.items.values())
+
 
     @property
     def get_free_space(self):
@@ -87,19 +88,7 @@ def main():
             print('Поработаем в следующий раз')
             break
 
-        store = Store()
-        shop = Shop()
         request = Request(user_input)
-
-        print(request)
-        store_items = {
-            'печеньки': 10,
-            "молоко": 8,
-            "чай": 12,
-            "сок": 9
-        }
-
-        store.items = store_items
 
         from_ = store if request.from_ == 'склад' else shop
         to = store if request.to == 'склад' else shop
@@ -108,24 +97,24 @@ def main():
             print(f'Товар {request.product} находится на {request.from_}')
         else:
             print(f'Товара {request.product} нет в наличии')
-            break
+            continue
 
         if from_.items[request.product] >= request.amount:
             print(f'Нужное количество есть на {request.from_}')
         else:
             print(f'Нет такого количества {request.product} на {request.from_}. '
                   f'На складе хранится {from_.items[request.product]} ед. товара')
-            break
+            continue
 
         if to.get_free_space >= request.amount:
             print(f'В {request.to} достаточно места')
         else:
             print(f'В {request.to} недостаточно места. ')
-            break
+            continue
 
         if request.to == 'магазин' and to.get_unique_items_count == 5 and request.product not in to.items:
             print('В магазин переполнен уникальными товарами')
-            break
+            continue
         from_.remove(request.product, request.amount)
         print(f'Курьер забрал {request.amount} {request.product} со {request.from_}')
         print(f'Курьер везет {request.amount} {request.product} со {request.from_} в {request.to}')
@@ -137,15 +126,27 @@ def main():
         print(f'На складе хранятся:')
         for name, count in store.items.items():
             print(f'{name} {count}')
-        print(f'Свободного места {from_.get_free_space}')
+        print(f'Свободного места {from_.get_free_space - sum(from_.items.values())}')
 
         print('=' * 50)
         print(f'В магазине хранятся:')
         for name, count in shop.items.items():
             print(f'{name} {count}')
         print(f'Свободного места {to.get_free_space}')
-        break
+        continue
 
 
 if __name__ == '__main__':
+    store = Store()
+    shop = Shop()
+
+    store_items = {
+        'печеньки': 10,
+        "молоко": 8,
+        "чай": 12,
+        "сок": 9
+    }
+
+    store.items = store_items
+
     main()
