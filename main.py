@@ -133,7 +133,6 @@ def main():
         for name, count in shop.items.items():
             print(f'{name} {count}')
         print(f'Свободного места {to.get_free_space}')
-        continue
 
 
 if __name__ == '__main__':
